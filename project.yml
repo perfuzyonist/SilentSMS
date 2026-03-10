@@ -6,21 +6,12 @@ targets:
     type: application
     platform: iOS
     deploymentTarget: "15.0"
-    sources: 
-      - path: SilentSMSApp.swift
-      - path: ContentView.swift
-      - path: SharedLogic.swift
+    sources: [SilentSMSApp.swift, ContentView.swift, SharedLogic.swift]
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.mustafa.SilentSMS
-
   SilentSMSExtension:
     type: app-extension
     platform: iOS
-    sources:
-      - path: MessageFilterExtension.swift
-      - path: SharedLogic.swift
+    sources: [MessageFilterExtension.swift, SharedLogic.swift]
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.mustafa.SilentSMS.Extension
-      INFOPLIST_KEY_NSExtension:
-        NSExtensionPointIdentifier: com.apple.identitylookup.message-filter
-        NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).MessageFilterExtension"
