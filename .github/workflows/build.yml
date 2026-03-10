@@ -2,7 +2,7 @@ name: iOS Build
 on: [push]
 jobs:
   deploy:
-    runs-on: macos-latest
+    runs-on: macos-14 # En son sürüm yerine daha stabil olan macos-14'ü kullanalım
     steps:
       - uses: actions/checkout@v4
       - name: Install XcodeGen
@@ -11,11 +11,16 @@ jobs:
         run: xcodegen generate
       - name: Build App
         run: |
-          xcodebuild archive -project SilentSMS.xcodeproj -scheme SilentSMS -archivePath SilentSMS.xcarchive -sdk iphoneos CODE_SIGNING_ALLOWED=NO
+          xcodebuild build -project SilentSMS.xcodeproj -scheme SilentSMS -sdk iphoneos CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO ENTITLEMENTS_REQUIRED=NO
       - name: Create IPA
         run: |
           mkdir -p Payload
-          cp -r SilentSMS.xcarchive/Products/Applications/SilentSMS.app Payload/
+          # Build klasörünü bulup uygulamayı kopyalıyoruz
+          APP_PATH=$(find build -name "*.app" | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "SilentSMS.app" | head -n 1)
+          fi
+          cp -r "$APP_PATH" Payload/
           zip -r SilentSMS.ipa Payload
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
