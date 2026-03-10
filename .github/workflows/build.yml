@@ -1,41 +1,20 @@
 name: iOS Build
 on: [push]
 jobs:
-  deploy:
-    runs-on: macos-15 # En güncel sürümde kalalım
+  build:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Build App
+      - name: Build with Xcode Direct
         run: |
-          mkdir -p build/SilentSMS.app/PlugIns/SilentSMSExtension.appex
-          
-          # 1. Ana Uygulamayı Derle
-          xcrun -sdk iphoneos swiftc -target arm64-apple-ios15.0-iphoneos \
-          -framework SwiftUI -framework IdentityLookup -framework Foundation \
-          -o build/SilentSMS.app/SilentSMS \
-          SilentSMSApp.swift ContentView.swift SharedLogic.swift
-
-          # 2. Extension'ı Derle
-          xcrun -sdk iphoneos swiftc -target arm64-apple-ios15.0-iphoneos \
-          -framework IdentityLookup -framework Foundation \
-          -o build/SilentSMS.app/PlugIns/SilentSMSExtension.appex/SilentSMSExtension \
-          MessageFilterExtension.swift SharedLogic.swift
-
-          # 3. Info.plist'leri Kopyala
-          cp Info.plist build/SilentSMS.app/Info.plist
-          
-          # Extension için kimlik kartı
-          echo '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>CFBundleIdentifier</key><string>com.mustafa.SilentSMS.Extension</string><key>CFBundleExecutable</key><string>SilentSMSExtension</string><key>CFBundlePackageType</key><string>XPC!</string><key>NSExtension</key><dict><key>NSExtensionPointIdentifier</key><string>com.apple.identitylookup.message-filter</string><key>NSExtensionPrincipalClass</key><string>SilentSMSExtension.MessageFilterExtension</string></dict></dict></plist>' > build/SilentSMS.app/PlugIns/SilentSMSExtension.appex/Info.plist
-
-      - name: Create IPA
-        run: |
+          # Proje dosyası olmadan basit bir xcode yapısı kuruyoruz
+          mkdir -p SilentSMS.app
+          xcrun -sdk iphoneos swiftc -target arm64-apple-ios15.0 -o SilentSMS.app/SilentSMS SilentSMSApp.swift ContentView.swift SharedLogic.swift -framework SwiftUI -framework IdentityLookup
+          cp Info.plist SilentSMS.app/Info.plist
           mkdir Payload
-          cp -r build/SilentSMS.app Payload/
+          cp -r SilentSMS.app Payload/
           zip -r SilentSMS.ipa Payload
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: SilentSMS-IPA
           path: SilentSMS.ipa
