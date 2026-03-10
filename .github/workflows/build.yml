@@ -8,7 +8,7 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
       - name: Generate Project
-        run: xcodegen generate
+        run: xcodegen generate --spec project.yml
       - name: Build App
         run: |
           xcodebuild build -project SilentSMS.xcodeproj -scheme SilentSMS -sdk iphoneos \
