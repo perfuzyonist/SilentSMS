@@ -2,7 +2,7 @@ name: iOS Build
 on: [push]
 jobs:
   deploy:
-    runs-on: macos-15 # En güncel macOS sürümüne geçtik
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
       - name: Install XcodeGen
@@ -13,6 +13,8 @@ jobs:
         run: |
           xcodebuild build -project SilentSMS.xcodeproj -scheme SilentSMS -sdk iphoneos \
           CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO ENTITLEMENTS_REQUIRED=NO \
+          COMPILER_INDEX_STORE_ENABLE=NO \
+          VALIDATE_PRODUCT=NO \
           CONFIGURATION_BUILD_DIR=$GITHUB_WORKSPACE/build
       - name: Create IPA
         run: |
