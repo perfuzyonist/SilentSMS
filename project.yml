@@ -1,6 +1,7 @@
 name: SilentSMS
 options:
   bundleIdPrefix: com.mustafa
+  xcodeVersion: "15.0" # KRİTİK: Proje formatını 15.0'a sabitler
 targets:
   SilentSMS:
     type: application
