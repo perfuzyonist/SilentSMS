@@ -9,9 +9,15 @@ targets:
     sources: [SilentSMSApp.swift, ContentView.swift, SharedLogic.swift]
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.mustafa.SilentSMS
+      INFOPLIST_FILE: Info.plist
+      GENERATE_INFOPLIST_FILE: NO
   SilentSMSExtension:
     type: app-extension
     platform: iOS
     sources: [MessageFilterExtension.swift, SharedLogic.swift]
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.mustafa.SilentSMS.Extension
+      GENERATE_INFOPLIST_FILE: YES
+      INFOPLIST_KEY_NSExtension:
+        NSExtensionPointIdentifier: com.apple.identitylookup.message-filter
+        NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).MessageFilterExtension"
