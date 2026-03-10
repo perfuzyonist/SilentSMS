@@ -1,0 +1,27 @@
+name: SilentSMS
+options:
+  bundleIdPrefix: com.mustafa
+targets:
+  SilentSMS:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources: 
+      - path: SilentSMSApp.swift
+      - path: ContentView.swift
+      - path: SharedLogic.swift
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.mustafa.SilentSMS
+      DEVELOPMENT_TEAM: "" # Burayı boş bırakabilirsin, Sideloadly halledecek.
+
+  SilentSMSExtension:
+    type: app-extension.message-filter
+    platform: iOS
+    sources:
+      - path: MessageFilterExtension.swift
+      - path: SharedLogic.swift
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.mustafa.SilentSMS.Extension
+      INFOPLIST_KEY_NSExtension:
+        NSExtensionPointIdentifier: com.apple.identitylookup.message-filter
+        NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).MessageFilterExtension"
