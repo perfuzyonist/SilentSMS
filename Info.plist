@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleExecutable</key>
-    <string>$(EXECUTABLE_NAME)</string>
+    <string>SilentSMS</string>
     <key>CFBundleIdentifier</key>
-    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <string>com.mustafa.SilentSMS</string>
     <key>CFBundleName</key>
     <string>SilentSMS</string>
     <key>CFBundlePackageType</key>
