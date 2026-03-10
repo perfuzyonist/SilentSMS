@@ -12,10 +12,9 @@ targets:
       - path: SharedLogic.swift
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.mustafa.SilentSMS
-      DEVELOPMENT_TEAM: "" # Burayı boş bırakabilirsin, Sideloadly halledecek.
 
   SilentSMSExtension:
-    type: app-extension.message-filter
+    type: app-extension
     platform: iOS
     sources:
       - path: MessageFilterExtension.swift
