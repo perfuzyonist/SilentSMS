@@ -2,19 +2,17 @@ name: iOS Build
 on: [push]
 jobs:
   deploy:
-    runs-on: macos-15
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install XcodeGen
         run: brew install xcodegen
-      - name: Generate Xcode Project
+      - name: Generate Project
         run: xcodegen generate
       - name: Build App
         run: |
           xcodebuild build -project SilentSMS.xcodeproj -scheme SilentSMS -sdk iphoneos \
           CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO ENTITLEMENTS_REQUIRED=NO \
-          COMPILER_INDEX_STORE_ENABLE=NO \
-          VALIDATE_PRODUCT=NO \
           CONFIGURATION_BUILD_DIR=$GITHUB_WORKSPACE/build
       - name: Create IPA
         run: |
