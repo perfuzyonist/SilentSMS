@@ -2,7 +2,7 @@ name: iOS Build
 on: [push]
 jobs:
   deploy:
-    runs-on: macos-14
+    runs-on: macos-15 # En güncel macOS sürümüne geçtik
     steps:
       - uses: actions/checkout@v4
       - name: Install XcodeGen
@@ -17,7 +17,6 @@ jobs:
       - name: Create IPA
         run: |
           mkdir -p Payload
-          # Build klasöründeki .app dosyasını kopyala
           cp -r $GITHUB_WORKSPACE/build/SilentSMS.app Payload/
           zip -r SilentSMS.ipa Payload
       - name: Upload Artifact
