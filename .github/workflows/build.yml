@@ -5,21 +5,38 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install XcodeGen
-        run: brew install xcodegen
-      - name: Generate Project
-        run: xcodegen generate
-      - name: Build App
+      
+      - name: Build App and Extension
         run: |
-          xcodebuild build -project SilentSMS.xcodeproj -scheme SilentSMS -sdk iphoneos \
-          CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO ENTITLEMENTS_REQUIRED=NO \
-          CONFIGURATION_BUILD_DIR=$GITHUB_WORKSPACE/build
-      - name: Create IPA
+          mkdir -p SilentSMS.app/PlugIns/SilentSMSExtension.appex
+          
+          # 1. Ana Uygulamayı Derle (IdentityLookup kütüphanesini bağlayarak)
+          swiftc -target arm64-apple-ios15.0-iphoneos \
+          -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
+          -framework SwiftUI -framework IdentityLookup -framework Foundation \
+          -o SilentSMS.app/SilentSMS \
+          SilentSMSApp.swift ContentView.swift SharedLogic.swift
+
+          # 2. Mesaj Filtreleme Motorunu Derle
+          swiftc -target arm64-apple-ios15.0-iphoneos \
+          -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
+          -framework IdentityLookup -framework Foundation \
+          -o SilentSMS.app/PlugIns/SilentSMSExtension.appex/SilentSMSExtension \
+          MessageFilterExtension.swift SharedLogic.swift
+
+          # 3. Kimlik Bilgilerini Ekle (Info.plist)
+          cp Info.plist SilentSMS.app/Info.plist
+          
+          # Extension için kimlik kartı oluştur
+          echo '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>CFBundleIdentifier</key><string>com.mustafa.SilentSMS.Extension</string><key>CFBundleExecutable</key><string>SilentSMSExtension</string><key>CFBundlePackageType</key><string>XPC!</string><key>NSExtension</key><dict><key>NSExtensionPointIdentifier</key><string>com.apple.identitylookup.message-filter</string><key>NSExtensionPrincipalClass</key><string>SilentSMSExtension.MessageFilterExtension</string></dict></dict></plist>' > SilentSMS.app/PlugIns/SilentSMSExtension.appex/Info.plist
+
+      - name: Package IPA
         run: |
-          mkdir -p Payload
-          cp -r $GITHUB_WORKSPACE/build/SilentSMS.app Payload/
+          mkdir Payload
+          cp -r SilentSMS.app Payload/
           zip -r SilentSMS.ipa Payload
-      - name: Upload Artifact
+
+      - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: SilentSMS-IPA
