@@ -1,0 +1,24 @@
+name: iOS Build
+on: [push]
+jobs:
+  deploy:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode Project
+        run: xcodegen generate
+      - name: Build App
+        run: |
+          xcodebuild archive -project SilentSMS.xcodeproj -scheme SilentSMS -archivePath SilentSMS.xcarchive -sdk iphoneos CODE_SIGNING_ALLOWED=NO
+      - name: Create IPA
+        run: |
+          mkdir -p Payload
+          cp -r SilentSMS.xcarchive/Products/Applications/SilentSMS.app Payload/
+          zip -r SilentSMS.ipa Payload
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: SilentSMS-IPA
+          path: SilentSMS.ipa
